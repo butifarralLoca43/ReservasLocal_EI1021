@@ -31,8 +31,14 @@ public class Sesion {
      */
     @SuppressWarnings("unchecked")
     public JSONObject toJSON() {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+    	JSONObject jsonObject = new JSONObject();
+        
+        jsonObject.put("actividad", this.actividad); 
+        jsonObject.put("hora", this.hora);           
+        jsonObject.put("plazas", this.plazas);       
+        
+        
+        return jsonObject;
     }
     
     /**
@@ -82,4 +88,17 @@ public class Sesion {
         this.plazas = plazas;
     }
     
+    //MÉTODO MAIN TEMPORAL PARA PRUEBAS
+    public static void main(String[] args) {
+        System.out.println("--- Probando la clase Sesion ---");
+
+        Sesion sesionDePrueba = new Sesion("Ironfit", 10, 15);
+        
+      
+        System.out.println("\nProbando el método toJSON():");
+        JSONObject objetoJSON = sesionDePrueba.toJSON();
+        System.out.println("Salida JSON: " + objetoJSON.toJSONString());
+        
+        System.out.println("\n--- Fin de las pruebas ---");
+    }
 }
