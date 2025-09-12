@@ -140,8 +140,20 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	private void escribeFichero(FileWriter os) {
-		// POR IMPLEMENTAR
-
+		JSONObject json = new JSONObject();
+		JSONArray ReservaPorUsuario;
+		System.out.println("hola");
+		
+		System.out.println(reservas.size());
+		for(String usuario : reservas.keySet()) {
+			ReservaPorUsuario = new JSONArray();
+			System.out.println("hola2");
+			for(Reserva reserva : reservas.get(usuario)){
+				System.out.println(reserva.toString());
+				ReservaPorUsuario.add(reserva.toJSON());
+			}
+			System.out.println(ReservaPorUsuario.toString());
+		}
 	}
 
 
@@ -194,7 +206,7 @@ public class GestorReservas {
 	 * @return La sesión encontrada o `null` si no existe una sesión con esos parámetros.
 	 */
 	Sesion buscaSesion(String actividad, DiaSemana dia, long hora) {
-        // POR IMPLEMENTAR
+        
         return null; // MODIFICAR
 	}
 
@@ -284,6 +296,19 @@ public class GestorReservas {
         // POR IMPLEMENTAR
         return null; // MODIFICAR
 	}
+	
+	//PROGRAMA TEMPORAL PARA HACER PRUEBAS
+	
+	public static void main(String[] args) {
+		// Crear el gestor (esto ya genera o lee el fichero reservas.json)
+	    GestorReservas gestor = new GestorReservas();
+
+	    // Forzar guardado en fichero
+	    gestor.guardaDatos();
+
+	    System.out.println(">>> Prueba terminada: se ha creado/actualizado reservas.json");
+	}
+	
 
 
 

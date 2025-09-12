@@ -43,7 +43,11 @@ public class Reserva implements Serializable {
      * @param jsonReserva Objeto JSON con la información de la reserva.
      */
     public Reserva(JSONObject jsonReserva) {
-        // POR IMPLEMENTAR
+        this.codReserva = (long) jsonReserva.get("codReserva");
+        this.codUsuario = (String) jsonReserva.get("codUsuario");
+        this.actividad = (String) jsonReserva.get("actividad");
+        this.dia = DiaSemana.valueOf( (String) jsonReserva.get("dia") );
+        this.hora = (long) jsonReserva.get("hora");
     }
 
     /**
@@ -140,7 +144,7 @@ public class Reserva implements Serializable {
         System.out.println("\n[Paso 3] Probando el constructor que recibe un JSON...");
         System.out.println("Creando una nueva reserva a partir del JSON anterior...");
         Reserva reservaDesdeJSON = new Reserva(jsonGenerado);
-        System.out.println("¡Nueva reserva creada con éxito!");
+        System.out.println("¡Nueva reserva creada con éxito!" + reservaDesdeJSON.toString());
         
         // 4. Verificación de los datos
         System.out.println("\n[Paso 4] Verificando que los datos se han cargado correctamente:");
