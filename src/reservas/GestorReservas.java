@@ -144,11 +144,7 @@ public class GestorReservas {
 		JSONArray ReservaPorUsuario;
 		
 		for(String usuario : reservas.keySet()) {
-			ReservaPorUsuario = new JSONArray();
-			
-			for(Reserva reserva : reservas.get(usuario)){
-				ReservaPorUsuario.add(reserva.toJSON());
-			}
+			ReservaPorUsuario = listaReservasUsuario(usuario);
 			json.put(usuario,ReservaPorUsuario);
 		}
 		
@@ -232,8 +228,14 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONArray listaReservasUsuario(String codUsuario) {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+		JSONArray array = new JSONArray();
+		Vector<Reserva> ReservasUsuario = reservas.get(codUsuario);
+		
+		for(Reserva reserva : ReservasUsuario) {
+			array.add(reserva.toJSON());
+		}
+        
+        return array;
 	}
 
 
