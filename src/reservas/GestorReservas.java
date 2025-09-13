@@ -249,8 +249,13 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONArray listaPlazasDisponibles(String actividad) {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+		JSONArray SesionesDisponibles = new JSONArray();
+        for(DiaSemana dia : sesionesSemana.keySet()) {
+            for(Sesion se : sesionesSemana.get(dia)) {
+                if(se.getPlazas() != 0) SesionesDisponibles.add(se.toJSON());
+            }
+        }
+        return SesionesDisponibles;
 	}
 
 
@@ -298,7 +303,10 @@ public class GestorReservas {
 	 * @return La reserva encontrada o `null` si no existe una reserva con ese código.
 	 */
 	private Reserva buscaReserva(Vector<Reserva> vector, long codReserva) {
-        // POR IMPLEMENTAR
+		if(!reservas.containsKey(codReserva)) return null;
+        for(Reserva re : vector) {
+            if(re.getCodReserva() == codReserva) return re;
+        }
         return null; // MODIFICAR
 	}
 
