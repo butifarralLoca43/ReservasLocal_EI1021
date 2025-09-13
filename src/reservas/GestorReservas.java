@@ -232,8 +232,13 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONArray listaReservasUsuario(String codUsuario) {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+        JSONArray ReservasUsuario = new JSONArray ();
+        if(reservas.containsKey(codUsuario)) {
+       		for(Reserva reservas : reservas.get(codUsuario)) {
+       			ReservasUsuario.add(reservas.toJSON());
+        		}
+        	}
+        return ReservasUsuario; // Busca los Usuarios en el mapa reservas y devuelve sus reservas en formato JSON.
 	}
 
 
