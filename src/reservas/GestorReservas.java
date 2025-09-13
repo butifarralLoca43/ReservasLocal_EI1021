@@ -231,10 +231,11 @@ public class GestorReservas {
 		JSONArray array = new JSONArray();
 		Vector<Reserva> ReservasUsuario = reservas.get(codUsuario);
 		
-		for(Reserva reserva : ReservasUsuario) {
-			array.add(reserva.toJSON());
+		if(reservas.containsKey(codUsuario)){
+			for(Reserva reserva : ReservasUsuario) {
+				array.add(reserva.toJSON());
+			}
 		}
-        
         return array;
 	}
 
