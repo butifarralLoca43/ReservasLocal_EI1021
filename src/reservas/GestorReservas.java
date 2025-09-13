@@ -142,18 +142,23 @@ public class GestorReservas {
 	private void escribeFichero(FileWriter os) {
 		JSONObject json = new JSONObject();
 		JSONArray ReservaPorUsuario;
-		System.out.println("hola");
 		
-		System.out.println(reservas.size());
 		for(String usuario : reservas.keySet()) {
 			ReservaPorUsuario = new JSONArray();
-			System.out.println("hola2");
+			
 			for(Reserva reserva : reservas.get(usuario)){
-				System.out.println(reserva.toString());
 				ReservaPorUsuario.add(reserva.toJSON());
 			}
-			System.out.println(ReservaPorUsuario.toString());
+			json.put(usuario,ReservaPorUsuario);
 		}
+		
+		
+		try {
+			os.write(json.toJSONString());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
 	}
 
 
@@ -206,7 +211,6 @@ public class GestorReservas {
 	 * @return La sesión encontrada o `null` si no existe una sesión con esos parámetros.
 	 */
 	Sesion buscaSesion(String actividad, DiaSemana dia, long hora) {
-		System.out.println("buscarSesion");
 		Vector<Sesion> sesiones = sesionesSemana.get(dia);
 		if (sesiones == null) return null;
 		
@@ -261,10 +265,6 @@ public class GestorReservas {
 		JSONObject json = new JSONObject();
 
 		Sesion se = buscaSesion(actividad,dia,hora);
-        
-		System.out.println("Intentando reserva: " + codUsuario + " " + actividad + " " + dia + " " + hora);
-		System.out.println("Sesion encontrada: " + se);
-		System.out.println("Plazas antes: " + (se != null ? se.getPlazas() : "N/A"));
 		
 		if(se == null || se.getPlazas() <= 0) {
         	return json;
@@ -280,9 +280,6 @@ public class GestorReservas {
         Reserva reserva = new Reserva(codUsuario, actividad, dia, hora);
         	
         reservas.get(codUsuario).add(reserva); //añado la nueva reserva a reservas del usuario
-        
-        System.out.println("Reservas para " + codUsuario + ": " + reservas.get(codUsuario).size());
-
         
         json.put("codReserva",reserva.getCodReserva());
         
