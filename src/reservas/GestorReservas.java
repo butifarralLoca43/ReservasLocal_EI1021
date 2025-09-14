@@ -256,7 +256,7 @@ public class GestorReservas {
             }
         }
         return SesionesDisponibles;
-
+	}
 
 
 	/**
@@ -324,8 +324,19 @@ public class GestorReservas {
 	 * @return Un `JSONObject` con la representación de la reserva modificada, o vacío si no se pudo modificar.
 	 */
 	public JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+		JSONObject modif = new JSONObject();
+        if(reservas.containsKey(codUsuario)) {
+        	Vector<Reserva> vect = reservas.get(codUsuario);
+        	Reserva re = buscaReserva(vect, codReserva);
+        	String act = re.getActividad();
+        	Sesion se = buscaSesion(act, nuevoDia, nuevaHora);
+        	if(se == null || se.getPlazas() == 0 ) return modif;
+        	re.setDia(nuevoDia);
+        	re.setHora(nuevaHora);
+        	se.setPlazas(se.getPlazas() - 1);
+        	modif = re.toJSON();
+        }
+        return modif; // MODIFICAR
 	}
 
 
@@ -337,8 +348,19 @@ public class GestorReservas {
 	 * @return Un `JSONObject` con la representación de la reserva cancelada, o vacío si no se encontró.
 	 */
 	public JSONObject cancelaReserva(String codUsuario, long codReserva) {
-        // POR IMPLEMENTAR
-        return null; // MODIFICAR
+		JSONObject res = new JSONObject();
+        if(reservas.containsKey(codUsuario)) {
+        	Vector<Reserva> vect = reservas.get(codUsuario);
+        	Reserva re = buscaReserva(vect, codReserva);
+        	if(re == null) return  res;   //Comprobamos que exista la reserva
+        	Sesion se = buscaSesion(re.getActividad(), re.getDia(), re.getHora());
+            if(se == null) return res;   //Comprobamos que exista la sesion
+            se.setPlazas(se.getPlazas() + 1);
+            res = re.toJSON();
+            if(vect.size() == 1) reservas.remove(codUsuario);    // Si solo tenia una reserva eliminamos al usuario del mapa
+            else reservas.get(codUsuario).remove(re);     // si tenia mas solo eliminamos la reserva del mapa
+        }
+        return res;// MODIFICAR
 	}
 	
 	//PROGRAMA TEMPORAL PARA HACER PRUEBAS
