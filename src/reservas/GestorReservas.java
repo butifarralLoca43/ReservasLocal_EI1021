@@ -144,11 +144,7 @@ public class GestorReservas {
 		JSONArray ReservaPorUsuario;
 		
 		for(String usuario : reservas.keySet()) {
-			ReservaPorUsuario = new JSONArray();
-			
-			for(Reserva reserva : reservas.get(usuario)){
-				ReservaPorUsuario.add(reserva.toJSON());
-			}
+			ReservaPorUsuario = listaReservasUsuario(usuario);
 			json.put(usuario,ReservaPorUsuario);
 		}
 		
@@ -232,13 +228,15 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONArray listaReservasUsuario(String codUsuario) {
-        JSONArray ReservasUsuario = new JSONArray ();
-        if(reservas.containsKey(codUsuario)) {
-       		for(Reserva reservas : reservas.get(codUsuario)) {
-       			ReservasUsuario.add(reservas.toJSON());
-        		}
-        	}
-        return ReservasUsuario; // Busca los Usuarios en el mapa reservas y devuelve sus reservas en formato JSON.
+		JSONArray array = new JSONArray();
+		Vector<Reserva> ReservasUsuario = reservas.get(codUsuario);
+		
+		if(reservas.containsKey(codUsuario)){
+			for(Reserva reserva : ReservasUsuario) {
+				array.add(reserva.toJSON());
+			}
+		}
+        return array;
 	}
 
 
@@ -251,14 +249,14 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public JSONArray listaPlazasDisponibles(String actividad) {
-        JSONArray SesionesDisponibles = new JSONArray();
+		JSONArray SesionesDisponibles = new JSONArray();
         for(DiaSemana dia : sesionesSemana.keySet()) {
-        	for(Sesion se : sesionesSemana.get(dia)) {
-        		if(se.getPlazas() != 0) SesionesDisponibles.add(se.toJSON());
-        	}
+            for(Sesion se : sesionesSemana.get(dia)) {
+                if(se.getPlazas() != 0) SesionesDisponibles.add(se.toJSON());
+            }
         }
-        return SesionesDisponibles;// MODIFICAR
-	}
+        return SesionesDisponibles;
+
 
 
 	/**
