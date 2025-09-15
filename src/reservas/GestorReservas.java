@@ -140,17 +140,21 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	private void escribeFichero(FileWriter os) {
-		JSONObject json = new JSONObject();
+		JSONArray array = new JSONArray();
 		JSONArray ReservaPorUsuario;
+		JSONObject jsonReserva;
 		
 		for(String usuario : reservas.keySet()) {
 			ReservaPorUsuario = listaReservasUsuario(usuario);
-			json.put(usuario,ReservaPorUsuario);
+			for(Object obj : ReservaPorUsuario) {
+				JSONObject reserva = (JSONObject) obj;
+				array.add(reserva);
+			}
 		}
 		
 		
 		try {
-			os.write(json.toJSONString());
+			os.write(array.toJSONString());
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -193,7 +197,15 @@ public class GestorReservas {
 	 * @param array	JSONArray con los datos de los paquetes
 	 */
 	private void rellenaDiccionarios(JSONArray array) {
-        // POR IMPLEMENTAR
+        JSONObject JSONreserva;
+        Reserva reserva;
+        
+        for(Object obj : array) {
+        	JSONreserva = (JSONObject) obj;
+        	reserva = new Reserva(JSONreserva);
+        	
+        	hazReserva(reserva.getCodUsuario(), reserva.getActividad(), reserva.getDia(), reserva.getHora());
+        }
 	}
 
 
@@ -366,13 +378,43 @@ public class GestorReservas {
 	//PROGRAMA TEMPORAL PARA HACER PRUEBAS
 	
 	public static void main(String[] args) {
-		// Crear el gestor (esto ya genera o lee el fichero reservas.json)
+	    // Crear el gestor (lee o crea reservas.json)
 	    GestorReservas gestor = new GestorReservas();
 
-	    // Forzar guardado en fichero
+	    // ✅ 1. Listar reservas de un usuario
+	    System.out.println("Reservas del usuario cli01:");
+	    System.out.println(gestor.listaReservasUsuario("cli01").toJSONString());
+
+	    // ✅ 2. Hacer una nueva reserva
+	    System.out.println("\nNueva reserva para cli08:");
+	    System.out.println(gestor.hazReserva("cli08", "Yoga", DiaSemana.viernes, 18));
+
+	    // ✅ 3. Listar plazas disponibles de Yoga
+	    System.out.println("\nPlazas disponibles para Yoga:");
+	    System.out.println(gestor.listaPlazasDisponibles("Yoga").toJSONString());
+
+	    // ✅ 4. Modificar una reserva existente (ejemplo con cli01)
+	    System.out.println("\nModificando una reserva de cli01...");
+	    var reservasCli01 = gestor.listaReservasUsuario("cli01");
+	    if (!reservasCli01.isEmpty()) {
+	        long codReserva = (long) ((org.json.simple.JSONObject) reservasCli01.get(0)).get("codReserva");
+	        System.out.println("Modificada: " +
+	            gestor.modificaReserva("cli01", codReserva, DiaSemana.viernes, 18));
+	    }
+
+	    // ✅ 5. Cancelar una reserva de cli05 (si existe)
+	    System.out.println("\nCancelando una reserva de cli05...");
+	    var reservasCli05 = gestor.listaReservasUsuario("cli05");
+	    if (!reservasCli05.isEmpty()) {
+	        long codReserva = (long) ((org.json.simple.JSONObject) reservasCli05.get(0)).get("codReserva");
+	        System.out.println("Cancelada: " +
+	            gestor.cancelaReserva("cli05", codReserva));
+	    }
+
+	    // ✅ 6. Guardar los cambios en el fichero
 	    gestor.guardaDatos();
 
-	    System.out.println(">>> Prueba terminada: se ha creado/actualizado reservas.json");
+	    System.out.println("\n>>> Pruebas terminadas. Fichero reservas.json actualizado.");
 	}
 	
 
