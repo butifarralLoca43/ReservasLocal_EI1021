@@ -55,7 +55,7 @@ public class UsuarioLocal {
                 case 0 -> { // Guardar los datos en el fichero y salir del programa
 
                     gestor.guardaDatos();
-                    break;
+                    System.exit(0);
 
                 }
                 case 1 -> { // Listar los paquetes enviados por el cliente
