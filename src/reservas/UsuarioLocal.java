@@ -74,7 +74,25 @@ public class UsuarioLocal {
                 case 3 -> { // Hacer una reserva
 
 
-                    // POR IMPLEMENTAR
+                	System.out.print("Dame una actividad: ");
+                    String actividad = teclado.nextLine();
+
+                    System.out.print("Dame un dia (ejemplo: lunes, martes...): ");
+                    DiaSemana dia = DiaSemana.leerDia(teclado);
+                    
+                    System.out.print("Dame una hora (número entero, ej: 9 o 18): ");
+                    long hora = teclado.nextLong();
+                    
+                    JSONObject nuevaReserva = gestor.hazReserva(codUsuario, actividad, dia, hora);
+
+                    if (nuevaReserva.isEmpty()) {
+                        System.out.println("❌ No se pudo hacer la reserva (actividad inexistente o sin plazas).");
+                    } else {
+                        System.out.println("✅ Reserva realizada con éxito: " + nuevaReserva.toJSONString());
+                    }
+                    
+                    
+                    
 
 
 
