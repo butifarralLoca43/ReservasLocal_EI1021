@@ -54,20 +54,25 @@ public class UsuarioLocal {
             switch (opcion) {
                 case 0 -> { // Guardar los datos en el fichero y salir del programa
 
-                    // POR IMPLEMENTAR
-
+                    gestor.guardaDatos();
+                    break;
 
                 }
                 case 1 -> { // Listar los paquetes enviados por el cliente
-
-                    // POR IMPLEMENTAR
-
+                	Scanner sc = new Scanner(System.in);
+                    System.out.println("Dame tu codigo de usuario: ");
+                    String codUsu = sc.nextLine();
+                    JSONArray res = gestor.listaReservasUsuario(codUsu);
+                    System.out.println(res);
 
                 }
                 case 2 -> { // Listar los plazas disponibles de una actividad
-
-                    // POR IMPLEMENTAR
-
+                	Scanner sc = new Scanner(System.in);
+                	System.out.println("Dame el nombre de un actividad");
+                	String act = sc.nextLine();
+                	JSONArray res = gestor.listaPlazasDisponibles(act);
+                	System.out.println(res);
+                	
 
 
                 }

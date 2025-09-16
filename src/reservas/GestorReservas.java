@@ -340,6 +340,7 @@ public class GestorReservas {
         if(reservas.containsKey(codUsuario)) {
         	Vector<Reserva> vect = reservas.get(codUsuario);
         	Reserva re = buscaReserva(vect, codReserva);
+        	if(re == null) return modif;
         	String act = re.getActividad();
         	Sesion se = buscaSesion(act, nuevoDia, nuevaHora);
         	if(se == null || se.getPlazas() == 0 ) return modif;
