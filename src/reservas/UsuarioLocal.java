@@ -60,18 +60,22 @@ public class UsuarioLocal {
                 }
                 case 1 -> { // Listar los paquetes enviados por el cliente
                 	Scanner sc = new Scanner(System.in);
-                    System.out.println("Dame tu codigo de usuario: ");
+                    System.out.print("Dame tu codigo de usuario: ");
                     String codUsu = sc.nextLine();
                     JSONArray res = gestor.listaReservasUsuario(codUsu);
-                    System.out.println(res);
+                    System.out.print(res);
 
                 }
                 case 2 -> { // Listar los plazas disponibles de una actividad
                 	Scanner sc = new Scanner(System.in);
-                	System.out.println("Dame el nombre de un actividad");
+                	DiaSemana dia = DiaSemana.leerDia(sc);
+                	System.out.print("Dame el nombre de un actividad: ");
                 	String act = sc.nextLine();
-                	JSONArray res = gestor.listaPlazasDisponibles(act);
-                	System.out.println(res);
+                	System.out.print("Dame la hora de la actividad: ");
+                	Integer hora = sc.nextInt();
+                	Sesion se = gestor.buscaSesion(act,dia,hora);
+                	long res = se.getPlazas();
+                	System.out.print(res);
                 	
 
 
