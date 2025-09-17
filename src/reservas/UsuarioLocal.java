@@ -59,10 +59,7 @@ public class UsuarioLocal {
 
                 }
                 case 1 -> { // Listar los paquetes enviados por el cliente
-                	Scanner sc = new Scanner(System.in);
-                    System.out.print("Dame tu codigo de usuario: ");
-                    String codUsu = sc.nextLine();
-                    JSONArray res = gestor.listaReservasUsuario(codUsu);
+                    JSONArray res = gestor.listaReservasUsuario(codUsuario);
                     System.out.print(res);
 
                 }
@@ -74,8 +71,12 @@ public class UsuarioLocal {
                 	System.out.print("Dame la hora de la actividad: ");
                 	Integer hora = sc.nextInt();
                 	Sesion se = gestor.buscaSesion(act,dia,hora);
-                	long res = se.getPlazas();
-                	System.out.print(res);
+                	if(se != null) {
+                		long res = se.getPlazas();
+                    	System.out.print(res);
+                	} else {
+                		System.out.println("❌ No hay plazas o no hay sesión para ese momento.");
+                	}
                 	
 
 
@@ -110,6 +111,7 @@ public class UsuarioLocal {
 
                 	System.out.println("Dame el código de una reserva: ");
                     long codReserva = teclado.nextLong();
+                    teclado.nextLine();
                     
                     System.out.println("Nuevo día: ");
                     DiaSemana dia = DiaSemana.leerDia(teclado);
@@ -120,7 +122,7 @@ public class UsuarioLocal {
                     JSONObject nuevaModificada = gestor.modificaReserva(codUsuario, codReserva, dia, hora);
                     
                     if (nuevaModificada.isEmpty()) {
-                        System.out.println("❌ No se pudo modificar la reserva (actividad inexistente o sin plazas).");
+                        System.out.println("❌ No se pudo modificar la reserva.");
                     } else {
                         System.out.println("✅ Reserva modificada con éxito: " + nuevaModificada.toJSONString());
                     }
@@ -128,9 +130,18 @@ public class UsuarioLocal {
 
                 }
                 case 5 -> { // Cancelar una reserva
-
-
-                    // POR IMPLEMENTAR
+                	
+                	System.out.println("Dame el código de una reserva: ");
+                    long codReserva = teclado.nextLong();
+                    teclado.nextLine();
+                    
+                    JSONObject reservaCancelada = gestor.cancelaReserva(codUsuario, codReserva);
+                    
+                    if(reservaCancelada.isEmpty()) {
+                    	System.out.println("❌ No se pudo cancelar la reserva");
+                    }else {
+                    	System.out.println("✅ Reserva cancelada con éxito: " + reservaCancelada.toJSONString());
+                    }
 
 
 
