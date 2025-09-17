@@ -79,13 +79,13 @@ public class UsuarioLocal {
                 case 3 -> { // Hacer una reserva
 
 
-                	System.out.print("Dame una actividad: ");
+                	System.out.println("Dame una actividad: ");
                     String actividad = teclado.nextLine();
 
-                    System.out.print("Dame un dia (ejemplo: lunes, martes...): ");
+                    System.out.println("Dame un dia (ejemplo: lunes, martes...): ");
                     DiaSemana dia = DiaSemana.leerDia(teclado);
                     
-                    System.out.print("Dame una hora (número entero, ej: 9 o 18): ");
+                    System.out.println("Dame una hora (número entero, ej: 9 o 18): ");
                     long hora = teclado.nextLong();
                     
                     JSONObject nuevaReserva = gestor.hazReserva(codUsuario, actividad, dia, hora);
@@ -104,8 +104,22 @@ public class UsuarioLocal {
                 }
                 case 4 -> { // Cambiar de día y hora una reserva
 
-
-                    // POR IMPLEMENTAR
+                	System.out.println("Dame el código de una reserva: ");
+                    long codReserva = teclado.nextLong();
+                    
+                    System.out.println("Nuevo día: ");
+                    DiaSemana dia = DiaSemana.leerDia(teclado);
+                    
+                    System.out.println("Nueva hora: ");
+                    long hora = teclado.nextLong();
+                    
+                    JSONObject nuevaModificada = gestor.modificaReserva(codUsuario, codReserva, dia, hora);
+                    
+                    if (nuevaModificada.isEmpty()) {
+                        System.out.println("❌ No se pudo modificar la reserva (actividad inexistente o sin plazas).");
+                    } else {
+                        System.out.println("✅ Reserva modificada con éxito: " + nuevaModificada.toJSONString());
+                    }
 
 
                 }

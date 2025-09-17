@@ -315,11 +315,13 @@ public class GestorReservas {
 	 * @return La reserva encontrada o `null` si no existe una reserva con ese código.
 	 */
 	private Reserva buscaReserva(Vector<Reserva> vector, long codReserva) {
-        if(!reservas.containsKey(codReserva)) return null;
-        for(Reserva re : vector) {
-        	if(re.getCodReserva() == codReserva) return re;
-        }
-        return null; // MODIFICAR
+		for (Reserva re : vector) {
+			System.out.println("Reserva del for: " + re.getCodReserva() + " Reserva pasada: " + codReserva);
+	        if (re.getCodReserva() == codReserva) {
+	            return re;
+	        }
+	    }
+	    return null; // No encontrada
 	}
 
 
@@ -337,10 +339,15 @@ public class GestorReservas {
 	 */
 	public JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
 		JSONObject modif = new JSONObject();
+		System.out.println("hola1");
         if(reservas.containsKey(codUsuario)) {
+        	System.out.println("hola2");
         	Vector<Reserva> vect = reservas.get(codUsuario);
         	Reserva re = buscaReserva(vect, codReserva);
-        	if(re == null) return modif;
+        	if(re == null) {
+        		System.out.println("hola3");
+        		return modif;
+        	}
         	String act = re.getActividad();
         	Sesion se = buscaSesion(act, nuevoDia, nuevaHora);
         	if(se == null || se.getPlazas() == 0 ) return modif;
