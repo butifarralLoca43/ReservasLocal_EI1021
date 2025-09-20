@@ -44,6 +44,8 @@ public class UsuarioLocal {
 
         // Crea un gestor de reservas
         GestorReservas gestor = new GestorReservas();
+        gestor.guardaDatos();
+        
 
         System.out.print("Introduce tu código de usuario: ");
         String codUsuario = teclado.nextLine();

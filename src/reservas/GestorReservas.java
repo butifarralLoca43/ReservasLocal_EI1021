@@ -316,7 +316,7 @@ public class GestorReservas {
 	 */
 	private Reserva buscaReserva(Vector<Reserva> vector, long codReserva) {
 		for (Reserva re : vector) {
-			System.out.println("Reserva del for: " + re.getCodReserva() + " Reserva pasada: " + codReserva);
+			// System.out.println("Reserva del for: " + re.getCodReserva() + " Reserva pasada: " + codReserva);
 	        if (re.getCodReserva() == codReserva) {
 	            return re;
 	        }
@@ -339,13 +339,13 @@ public class GestorReservas {
 	 */
 	public JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
 		JSONObject modif = new JSONObject();
-		System.out.println("hola1");
+		// System.out.println("hola1");
         if(reservas.containsKey(codUsuario)) {
-        	System.out.println("hola2");
+        	// System.out.println("hola2");
         	Vector<Reserva> vect = reservas.get(codUsuario);
         	Reserva re = buscaReserva(vect, codReserva);
         	if(re == null) {
-        		System.out.println("hola3");
+        		// System.out.println("hola3");
         		return modif;
         	}
         	String act = re.getActividad();
