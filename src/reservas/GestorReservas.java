@@ -200,7 +200,7 @@ public class GestorReservas {
         JSONObject JSONreserva;
         Reserva reserva;
         
-        for(Object obj : array) {
+        for(Object obj : array) { // for para reocorrer los JSON en el array
         	JSONreserva = (JSONObject) obj;
         	reserva = new Reserva(JSONreserva);
         	
@@ -316,12 +316,11 @@ public class GestorReservas {
 	 */
 	private Reserva buscaReserva(Vector<Reserva> vector, long codReserva) {
 		for (Reserva re : vector) {
-			// System.out.println("Reserva del for: " + re.getCodReserva() + " Reserva pasada: " + codReserva);
 	        if (re.getCodReserva() == codReserva) {
 	            return re;
 	        }
 	    }
-	    return null; // No encontrada
+	    return null; 
 	}
 
 
@@ -339,13 +338,10 @@ public class GestorReservas {
 	 */
 	public JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
 		JSONObject modif = new JSONObject();
-		// System.out.println("hola1");
         if(reservas.containsKey(codUsuario)) {
-        	// System.out.println("hola2");
         	Vector<Reserva> vect = reservas.get(codUsuario);
         	Reserva re = buscaReserva(vect, codReserva);
         	if(re == null) {
-        		// System.out.println("hola3");
         		return modif;
         	}
         	String act = re.getActividad();
@@ -356,7 +352,7 @@ public class GestorReservas {
         	se.setPlazas(se.getPlazas() - 1);
         	modif = re.toJSON();
         }
-        return modif; // MODIFICAR
+        return modif;
 	}
 
 
@@ -380,49 +376,7 @@ public class GestorReservas {
             if(vect.size() == 1) reservas.remove(codUsuario);    // Si solo tenia una reserva eliminamos al usuario del mapa
             else reservas.get(codUsuario).remove(re);     // si tenia mas solo eliminamos la reserva del mapa
         }
-        return res;// MODIFICAR
-	}
-	
-	//PROGRAMA TEMPORAL PARA HACER PRUEBAS
-	
-	public static void main(String[] args) {
-	    // Crear el gestor (lee o crea reservas.json)
-	    GestorReservas gestor = new GestorReservas();
-
-	    // ✅ 1. Listar reservas de un usuario
-	    System.out.println("Reservas del usuario cli01:");
-	    System.out.println(gestor.listaReservasUsuario("cli01").toJSONString());
-
-	    // ✅ 2. Hacer una nueva reserva
-	    System.out.println("\nNueva reserva para cli08:");
-	    System.out.println(gestor.hazReserva("cli08", "Yoga", DiaSemana.viernes, 18));
-
-	    // ✅ 3. Listar plazas disponibles de Yoga
-	    System.out.println("\nPlazas disponibles para Yoga:");
-	    System.out.println(gestor.listaPlazasDisponibles("Yoga").toJSONString());
-
-	    // ✅ 4. Modificar una reserva existente (ejemplo con cli01)
-	    System.out.println("\nModificando una reserva de cli01...");
-	    var reservasCli01 = gestor.listaReservasUsuario("cli01");
-	    if (!reservasCli01.isEmpty()) {
-	        long codReserva = (long) ((org.json.simple.JSONObject) reservasCli01.get(0)).get("codReserva");
-	        System.out.println("Modificada: " +
-	            gestor.modificaReserva("cli01", codReserva, DiaSemana.viernes, 18));
-	    }
-
-	    // ✅ 5. Cancelar una reserva de cli05 (si existe)
-	    System.out.println("\nCancelando una reserva de cli05...");
-	    var reservasCli05 = gestor.listaReservasUsuario("cli05");
-	    if (!reservasCli05.isEmpty()) {
-	        long codReserva = (long) ((org.json.simple.JSONObject) reservasCli05.get(0)).get("codReserva");
-	        System.out.println("Cancelada: " +
-	            gestor.cancelaReserva("cli05", codReserva));
-	    }
-
-	    // ✅ 6. Guardar los cambios en el fichero
-	    gestor.guardaDatos();
-
-	    System.out.println("\n>>> Pruebas terminadas. Fichero reservas.json actualizado.");
+        return res;
 	}
 	
 

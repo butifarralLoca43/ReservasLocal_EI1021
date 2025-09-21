@@ -123,40 +123,6 @@ public class Reserva implements Serializable {
 
     // Getters y setters
     
-    public static void main(String[] args) {
-        System.out.println("--- INICIO DE PRUEBAS PARA LA CLASE RESERVA ---");
-
-        // 1. Creamos una reserva usando el constructor principal.
-        System.out.println("\n[Paso 1] Creando una reserva para 'cli01' de Yoga el JUEVES a las 18:00...");
-        Reserva reservaOriginal = new Reserva("cli01", "Yoga", DiaSemana.jueves, 18);
-        System.out.println("Reserva creada con código: " + reservaOriginal.getCodReserva());
-
-        // 2. ✅ Prueba del método toJSON()
-        System.out.println("\n[Paso 2] Probando el método toJSON()...");
-        JSONObject jsonGenerado = reservaOriginal.toJSON();
-        System.out.println("Salida JSON -> " + jsonGenerado.toJSONString());
-        
-        // La prueba de toString() es implícita, ya que llama a toJSON().
-        System.out.println("Salida toString() -> " + reservaOriginal.toString());
-
-
-        // 3. ✅ Prueba del constructor Reserva(JSONObject)
-        System.out.println("\n[Paso 3] Probando el constructor que recibe un JSON...");
-        System.out.println("Creando una nueva reserva a partir del JSON anterior...");
-        Reserva reservaDesdeJSON = new Reserva(jsonGenerado);
-        System.out.println("¡Nueva reserva creada con éxito!" + reservaDesdeJSON.toString());
-        
-        // 4. Verificación de los datos
-        System.out.println("\n[Paso 4] Verificando que los datos se han cargado correctamente:");
-        System.out.println("  -> Código Usuario: " + reservaDesdeJSON.getCodUsuario() + " (Esperado: cli01)");
-        System.out.println("  -> Actividad: " + reservaDesdeJSON.getActividad() + " (Esperado: Yoga)");
-        System.out.println("  -> Día: " + reservaDesdeJSON.getDia() + " (Esperado: JUEVES)");
-        System.out.println("  -> Hora: " + reservaDesdeJSON.getHora() + " (Esperado: 18)");
-        System.out.println("  -> Código Reserva: " + reservaDesdeJSON.getCodReserva() + " (Esperado: " + reservaOriginal.getCodReserva() + ")");
-
-        System.out.println("\n--- FIN DE LAS PRUEBAS ---");
-    }
-    
     
 
 
