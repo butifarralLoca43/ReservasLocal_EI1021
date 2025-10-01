@@ -264,7 +264,9 @@ public class GestorReservas {
 		JSONArray SesionesDisponibles = new JSONArray();
         for(DiaSemana dia : sesionesSemana.keySet()) {
             for(Sesion se : sesionesSemana.get(dia)) {
-                if(se.getPlazas() != 0) SesionesDisponibles.add(se.toJSON());
+                if(se.getActividad().equals(actividad) && se.getPlazas() > 0) {
+                	SesionesDisponibles.add(se.toJSON());
+                }
             }
         }
         return SesionesDisponibles;
@@ -347,6 +349,12 @@ public class GestorReservas {
         	String act = re.getActividad();
         	Sesion se = buscaSesion(act, nuevoDia, nuevaHora);
         	if(se == null || se.getPlazas() == 0 ) return modif;
+        	
+        	Sesion sesionAnterior = buscaSesion(act, re.getDia(), re.getHora());
+            if (sesionAnterior != null) {
+                sesionAnterior.setPlazas(sesionAnterior.getPlazas() + 1);
+            }
+            
         	re.setDia(nuevoDia);
         	re.setHora(nuevaHora);
         	se.setPlazas(se.getPlazas() - 1);
