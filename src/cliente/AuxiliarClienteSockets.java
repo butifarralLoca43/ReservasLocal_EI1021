@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Vector;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import comun.DiaSemana;
 import comun.MyStreamSocket;
+import reservas.Reserva;
 
 /**
  * Esta clase es un módulo que proporciona la lógica de aplicación
@@ -22,6 +24,7 @@ public class AuxiliarClienteSockets {
 
 	private final MyStreamSocket mySocket; // Socket de datos para comunicarse con el servidor
 	JSONParser parser;
+	
 
 	/**
 	 * Construye un objeto auxiliar asociado a un cliente del servicio.
@@ -45,21 +48,49 @@ public class AuxiliarClienteSockets {
 
 
 	@SuppressWarnings("unchecked")
-	public JSONArray listaReservasUsuario(String codUsuario) {
-		// POR IMPLEMENTAR
-		return null; // cambiar por el retorno correcto
+	public JSONArray listaReservasUsuario(String codUsuario) throws IOException, ParseException{
+		JSONObject json = new JSONObject();
+		JSONArray array = new JSONArray();
+		json.put("operacion", "1");
+		json.put("codUsuario", codUsuario);
+		
+		try {
+			mySocket.sendMessage(json.toString());
+		
+			String res = mySocket.receiveMessage();
+			array = (JSONArray) parser.parse(res);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return array;
 	} // end listaReservasUsuario
 	
 	@SuppressWarnings("unchecked")
-	public JSONArray listaPlazasDisponibles(String actividad) {
-		// POR IMPLEMENTAR
-		return null; // cambiar por el retorno correcto
+	public JSONArray listaPlazasDisponibles(String actividad){
+		JSONObject json = new JSONObject();
+		JSONArray array = new JSONArray();
+		json.put("operacion", "2");
+		json.put("actividad", actividad);
+		try {
+			mySocket.sendMessage(json.toString());
+		
+			String res = mySocket.receiveMessage();
+			array = (JSONArray) parser.parse(res);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		return array; // cambiar por el retorno correcto
 	} // end listaPlazasDisponibles
 
 
 	@SuppressWarnings("unchecked")
 	JSONObject hazReserva(String codUsuario, String actividad, DiaSemana dia, long hora) {
-		// POR IMPLEMENTAR
+		JSONObject json = new JSONObject();
+		json.put("operacion", "3");
+		json.put("actividad", actividad);
+		json.put("dia", dia);
+		json.put("hora", hora);
 		return null; // cambiar por el retorno correcto
 	} // end hazReserva
 
