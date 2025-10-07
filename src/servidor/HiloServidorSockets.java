@@ -28,7 +28,8 @@ class HiloServidorSockets implements Runnable {
 	 * @param	unGestor		gestor de viajes
 	 */
 	HiloServidorSockets(MyStreamSocket myDataSocket, GestorReservas unGestor) {
-		// POR IMPLEMENTAR
+		this.myDataSocket = myDataSocket;
+		this.gestor = unGestor;
 	}
 
 	/**
