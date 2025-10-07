@@ -8,6 +8,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import comun.DiaSemana;
+import gestor.Reserva;
+import gestor.Sesion;
 
 import java.io.File;
 import java.io.FileReader;
@@ -21,6 +23,375 @@ public class GestorReservas {
 
 	// Sustituye esta clase por tu versión de la misma de la práctica 1.
 	// Modifícalo para tener en cuenta el acceso concurrente de todos los hilos.
+	
+	private FileWriter os;			// stream para escribir los datos de las reservas en el fichero
+
+	// Sesiones de la próxima semana indexadas por el día de la semana. Empiezan mañana, cuando se puede reservar
+	final private HashMap<DiaSemana, Vector<Sesion>> sesionesSemana;
+	// Reservas indexadas por el código de usuario
+	final private HashMap<String, Vector<Reserva>> reservas;
+
+	/**
+	 * Constructor del gestor de reservas
+	 * Crea o lee el fichero con datos de prueba por defecto, dependiendo de que exista el fichero
+	 */
+	public GestorReservas() {
+
+		this.sesionesSemana = new HashMap<DiaSemana, Vector<Sesion>>();
+		this.reservas = new HashMap<String, Vector<Reserva>>();
+
+		// Genera las sesiones de la próxima semana con todas las plazas libres inicialmente
+		generaSesiones();
+
+		File file = new File("reservas.json");
+		try {
+			if (!file.exists() ) {
+				// Si no existen el fichero de datos, los genera con valores por defecto.
+				// Hace las correspondientes reservas modificando los diccionarios de sesiones y reservas
+				os = new FileWriter(file);
+				generaReservas();
+				escribeFichero(os);
+				os.close();
+			}
+			else {
+				// Si existe el fichero, lo lee, y hace las correspondientes reservas
+				FileReader is = new FileReader(file);
+				leeFichero(is);
+				is.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Genera y almacena las sesiones disponibles para cada día de la próxima semana.
+	 * 
+	 * Se asignan diferentes actividades a cada día con horarios y plazas predefinidas.
+	 * Las sesiones se almacenan en un diccionario indexado por `DiaSemana`.
+	 */
+	private void generaSesiones() {
+		for (DiaSemana diaSemana : DiaSemana.values()) {
+			Vector<Sesion> sesionesDia = new Vector<>(); // Asegura que nunca sea null
+
+			switch (diaSemana) {
+			case lunes -> {
+				sesionesDia.add(new Sesion("Taichí", 9, 3));
+				sesionesDia.add(new Sesion("Ironfit", 10, 3));
+			}
+			case martes -> {
+				sesionesDia.add(new Sesion("Ironfit", 10, 3));
+				sesionesDia.add(new Sesion("Yoga", 18, 3));
+			}
+			case miercoles -> {
+				sesionesDia.add(new Sesion("Taichí", 9, 3));
+				sesionesDia.add(new Sesion("Yoga", 18, 3));
+			}
+			case jueves -> {
+				sesionesDia.add(new Sesion("Taichí", 9, 3));
+				sesionesDia.add(new Sesion("Ironfit", 10, 3));
+			}
+			case viernes -> {
+				sesionesDia.add(new Sesion("Ironfit", 10, 3));
+				sesionesDia.add(new Sesion("Yoga", 18, 3));
+			}
+			default -> {} // No se definen sesiones para sábado y domingo
+			}
+
+			// Solo guarda los posibles sesiones del día
+			if (!sesionesDia.isEmpty()) {
+				sesionesSemana.put(diaSemana, sesionesDia);
+			}
+		}
+	}
+
+	/**
+	 * Genera los datos iniciales y los guarda en los diccionarios
+	 */
+	private void generaReservas() {
+
+		hazReserva("cli01", "Taichí", DiaSemana.lunes, 9);     
+		hazReserva("cli01", "Taichí", DiaSemana.miercoles, 9);  
+		hazReserva("cli02", "Taichí", DiaSemana.lunes, 9);     
+		hazReserva("cli03", "Ironfit", DiaSemana.martes, 10); 
+		hazReserva("cli04", "Ironfit", DiaSemana.martes, 10); 
+		hazReserva("cli05", "Ironfit", DiaSemana.martes, 10); 
+		hazReserva("cli05", "Yoga", DiaSemana.martes, 18);    
+		hazReserva("cli05", "Yoga", DiaSemana.miercoles, 18);    
+		hazReserva("cli06", "Ironfit", DiaSemana.jueves, 10); 
+		hazReserva("cli07", "Ironfit", DiaSemana.jueves, 10); 
+	}
+
+
+
+	/**
+	 * Cuando cada usuario cierra su sesión volcamos los datos en el fichero para mantenerlo actualizado
+	 */
+	public synchronized void guardaDatos(){
+		File file = new File("reservas.json");
+		try {
+			os = new FileWriter(file);
+			escribeFichero(os);
+			os.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Escribe en el fichero un array JSON con los datos de las reservas guardadas en el diccionario
+	 *
+	 * @param os	stream de escritura asociado al fichero de datos
+	 */
+	@SuppressWarnings("unchecked")
+	private synchronized void escribeFichero(FileWriter os) {
+		JSONArray array = new JSONArray();
+		JSONArray ReservaPorUsuario;
+		JSONObject jsonReserva;
+		
+		for(String usuario : reservas.keySet()) {
+			ReservaPorUsuario = listaReservasUsuario(usuario);
+			for(Object obj : ReservaPorUsuario) {
+				JSONObject reserva = (JSONObject) obj;
+				array.add(reserva);
+			}
+		}
+		
+		
+		try {
+			os.write(array.toJSONString());
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+
+	}
+
+
+
+	/**
+	 * Lee los datos almacenados de un archivo JSON y los carga en el diccionario en memoria.
+	 *
+	 * @param is Stream de lectura del archivo que contiene los datos en formato JSON.
+	 */
+	private synchronized void leeFichero(FileReader is) {
+		JSONParser parser = new JSONParser();
+
+		try {
+			// Leemos toda la información del fichero en un array de objetos JSON
+			JSONArray array = (JSONArray) parser.parse(is);
+
+			// Si hay sesiones, las incluimos en el diccionario
+			if (array != null && !array.isEmpty()) {
+				rellenaDiccionarios(array);
+			} else {
+				System.err.println("Advertencia: El archivo JSON está vacío o no contiene datos válidos.");
+			}
+		} catch (IOException e) {
+			System.err.println("Error al leer el archivo JSON: " + e.getMessage());
+			e.printStackTrace();
+		} catch (ParseException e) {
+			System.err.println("Error al parsear el archivo JSON: " + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
+
+	/**
+	 * Rellena y modifica los diccionarios a partir de los datos en un JSONArray
+	 *
+	 * @param array	JSONArray con los datos de los paquetes
+	 */
+	private synchronized void rellenaDiccionarios(JSONArray array) {
+        JSONObject JSONreserva;
+        Reserva reserva;
+        
+        for(Object obj : array) { // for para reocorrer los JSON en el array
+        	JSONreserva = (JSONObject) obj;
+        	reserva = new Reserva(JSONreserva);
+        	
+        	hazReserva(reserva.getCodUsuario(), reserva.getActividad(), reserva.getDia(), reserva.getHora());
+        }
+	}
+
+
+
+	/**
+	 * Busca y devuelve una sesión determinada en función de la actividad, el día y la hora especificados.
+	 *
+	 * @param actividad Nombre de la actividad a buscar.
+	 * @param dia Día de la semana en el que se realiza la sesión.
+	 * @param hora Hora de la sesión en formato 24 horas.
+	 * @return La sesión encontrada o `null` si no existe una sesión con esos parámetros.
+	 */
+	synchronized Sesion buscaSesion(String actividad, DiaSemana dia, long hora) {
+		Vector<Sesion> sesiones = sesionesSemana.get(dia);
+		if (sesiones == null) return null;
+		
+		
+        for(Sesion se : sesiones) {
+        	if(se.getActividad().equals(actividad) && se.getHora() == hora) {
+        		return se;
+        	}
+        }
+        return null;
+	}
+
+
+	/**
+	 * Obtiene una lista de todas las reservas del usuario específico.
+	 *
+	 * @param codUsuario El código del usuario cuyas reservas se desea listar
+	 * @return Un `JSONArray` que contiene la representación JSON de cada reserva del usuario.
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized JSONArray listaReservasUsuario(String codUsuario) {
+		JSONArray array = new JSONArray();
+		Vector<Reserva> ReservasUsuario = reservas.get(codUsuario);
+		
+		if(reservas.containsKey(codUsuario)){
+			for(Reserva reserva : ReservasUsuario) {
+				array.add(reserva.toJSON());
+			}
+		}
+        return array;
+	}
+
+
+	/**
+	 * Obtiene una lista de todas las sesiones con plazas disponibles para una actividad específica.
+	 * 
+	 * @param actividad Nombre de la actividad de la cual se desean obtener las plazas disponibles.
+	 * @return Un `JSONArray` con las sesiones disponibles, incluyendo día, hora y número de plazas.
+	 *         Si no hay sesiones disponibles, se devuelve un JSONArray vacío.
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized JSONArray listaPlazasDisponibles(String actividad) {
+		JSONArray SesionesDisponibles = new JSONArray();
+        for(DiaSemana dia : sesionesSemana.keySet()) {
+            for(Sesion se : sesionesSemana.get(dia)) {
+                if(se.getActividad().equals(actividad) && se.getPlazas() > 0) {
+                	SesionesDisponibles.add(se.toJSON());
+                }
+            }
+        }
+        return SesionesDisponibles;
+	}
+
+
+	/**
+	 * Realiza una reserva si hay la sesión existe y hay plazas disponibles.
+	 * 
+	 * @param codUsuario Código del usuario que solicita la reserva.
+	 * @param actividad Nombre de la actividad que se quiere reservar.
+	 * @param dia Día de la semana en que se quiere reservar la sesión.
+	 * @param hora Hora de la sesión en formato 24 horas.
+	 * @return Un objeto `JSONObject` con el código de la reserva si se realizó con éxito, o vacío si no fue posible reservar.
+	 */
+	@SuppressWarnings("unchecked")
+	public synchronized JSONObject hazReserva(String codUsuario, String actividad, DiaSemana dia, long hora) {
+		JSONObject json = new JSONObject();
+
+		Sesion se = buscaSesion(actividad,dia,hora);
+		
+		if(se == null || se.getPlazas() <= 0) {
+        	return json;
+        }
+        
+        if (!reservas.containsKey(codUsuario)) { //Usuario no ha reservado nunca
+        	reservas.put(codUsuario, new Vector<Reserva>());
+        }
+        
+        
+        se.setPlazas(se.getPlazas() - 1); //-1 plaza
+        	
+        Reserva reserva = new Reserva(codUsuario, actividad, dia, hora);
+        	
+        reservas.get(codUsuario).add(reserva); //añado la nueva reserva a reservas del usuario
+        
+        json.put("codReserva",reserva.getCodReserva());
+        
+        return json;
+	}
+
+
+	/**
+	 * Busca una reserva dentro de una lista de reservas de un usuario a partir de su código.
+	 * 
+	 * @param vector Lista de reservas asociadas a un usuario.
+	 * @param codReserva Código único de la reserva que se desea buscar.
+	 * @return La reserva encontrada o `null` si no existe una reserva con ese código.
+	 */
+	private synchronized Reserva buscaReserva(Vector<Reserva> vector, long codReserva) {
+		for (Reserva re : vector) {
+	        if (re.getCodReserva() == codReserva) {
+	            return re;
+	        }
+	    }
+	    return null; 
+	}
+
+
+
+
+	/**
+	 * Modifica una reserva existente, cambiándola a otro día y hora si hay plazas disponibles,
+	 * pero manteniendo la actividad y el código de la reserva
+	 *
+	 * @param codUsuario Código del usuario que posee la reserva.
+	 * @param codReserva Código de la reserva a modificar.
+	 * @param nuevoDia Nuevo día de la semana para la reserva.
+	 * @param nuevaHora Nueva hora de la sesión en formato 24 horas.
+	 * @return Un `JSONObject` con la representación de la reserva modificada, o vacío si no se pudo modificar.
+	 */
+	public synchronized JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
+		JSONObject modif = new JSONObject();
+        if(reservas.containsKey(codUsuario)) {
+        	Vector<Reserva> vect = reservas.get(codUsuario);
+        	Reserva re = buscaReserva(vect, codReserva);
+        	if(re == null) {
+        		return modif;
+        	}
+        	String act = re.getActividad();
+        	Sesion se = buscaSesion(act, nuevoDia, nuevaHora);
+        	if(se == null || se.getPlazas() == 0 ) return modif;
+        	
+        	Sesion sesionAnterior = buscaSesion(act, re.getDia(), re.getHora());
+            if (sesionAnterior != null) {
+                sesionAnterior.setPlazas(sesionAnterior.getPlazas() + 1);
+            }
+            
+        	re.setDia(nuevoDia);
+        	re.setHora(nuevaHora);
+        	se.setPlazas(se.getPlazas() - 1);
+        	modif = re.toJSON();
+        }
+        return modif;
+	}
+
+
+	/**
+	 * Cancela una reserva existente de un usuario y libera la plaza en la sesión correspondiente.
+	 *
+	 * @param codUsuario Código del usuario que ha hecho la reserva.
+	 * @param codReserva Código único de la reserva a cancelar.
+	 * @return Un `JSONObject` con la representación de la reserva cancelada, o vacío si no se encontró.
+	 */
+	public synchronized JSONObject cancelaReserva(String codUsuario, long codReserva) {
+		JSONObject res = new JSONObject();
+        if(reservas.containsKey(codUsuario)) {
+        	Vector<Reserva> vect = reservas.get(codUsuario);
+        	Reserva re = buscaReserva(vect, codReserva);
+        	if(re == null) return  res;   //Comprobamos que exista la reserva
+        	Sesion se = buscaSesion(re.getActividad(), re.getDia(), re.getHora());
+            if(se == null) return res;   //Comprobamos que exista la sesion
+            se.setPlazas(se.getPlazas() + 1);
+            res = re.toJSON();
+            if(vect.size() == 1) reservas.remove(codUsuario);    // Si solo tenia una reserva eliminamos al usuario del mapa
+            else reservas.get(codUsuario).remove(re);     // si tenia mas solo eliminamos la reserva del mapa
+        }
+        return res;
+	}
 
 
 }
