@@ -44,7 +44,6 @@ public class UsuarioLocal {
 
         // Crea un gestor de reservas
         GestorReservas gestor = new GestorReservas();
-        gestor.guardaDatos();
         
 
         System.out.print("Introduce tu código de usuario: ");
@@ -75,9 +74,12 @@ public class UsuarioLocal {
                 	Sesion se = gestor.buscaSesion(act,dia,hora);
                 	if(se != null) {
                 		long res = se.getPlazas();
+                		if(res == 0){
+                			System.out.print("No hay plazas disponibles para esa sesión");
+                		}
                     	System.out.print(res);
                 	} else {
-                		System.out.println("❌ No hay plazas o no hay sesión para ese momento.");
+                		System.out.println("No hay sesión para ese momento.");
                 	}
                 	
 
@@ -98,9 +100,9 @@ public class UsuarioLocal {
                     JSONObject nuevaReserva = gestor.hazReserva(codUsuario, actividad, dia, hora);
 
                     if (nuevaReserva.isEmpty()) {
-                        System.out.println("❌ No se pudo hacer la reserva (actividad inexistente o sin plazas).");
+                        System.out.println("No se pudo hacer la reserva (actividad inexistente o sin plazas).");
                     } else {
-                        System.out.println("✅ Reserva realizada con éxito: " + nuevaReserva.toJSONString());
+                        System.out.println("Reserva realizada con éxito: " + nuevaReserva.toJSONString());
                     }
                     
                     
@@ -124,9 +126,9 @@ public class UsuarioLocal {
                     JSONObject nuevaModificada = gestor.modificaReserva(codUsuario, codReserva, dia, hora);
                     
                     if (nuevaModificada.isEmpty()) {
-                        System.out.println("❌ No se pudo modificar la reserva.");
+                        System.out.println("No se pudo modificar la reserva.");
                     } else {
-                        System.out.println("✅ Reserva modificada con éxito: " + nuevaModificada.toJSONString());
+                        System.out.println("Reserva modificada con éxito: " + nuevaModificada.toJSONString());
                     }
 
 
@@ -140,9 +142,9 @@ public class UsuarioLocal {
                     JSONObject reservaCancelada = gestor.cancelaReserva(codUsuario, codReserva);
                     
                     if(reservaCancelada.isEmpty()) {
-                    	System.out.println("❌ No se pudo cancelar la reserva");
+                    	System.out.println("No se pudo cancelar la reserva");
                     }else {
-                    	System.out.println("✅ Reserva cancelada con éxito: " + reservaCancelada.toJSONString());
+                    	System.out.println("Reserva cancelada con éxito: " + reservaCancelada.toJSONString());
                     }
 
 
