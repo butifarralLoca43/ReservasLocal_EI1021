@@ -159,8 +159,6 @@ public class ClienteSockets {
                     	System.out.println("Reserva cancelada con éxito: " + reservaCancelada.toJSONString());
                     }
 
-
-
                 }
 
             } // fin switch
