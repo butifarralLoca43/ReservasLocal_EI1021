@@ -48,7 +48,7 @@ public class AuxiliarClienteSockets {
 
 
 	@SuppressWarnings("unchecked")
-	public JSONArray listaReservasUsuario(String codUsuario) throws IOException, ParseException{
+	public JSONArray listaReservasUsuario(String codUsuario){
 		JSONObject json = new JSONObject();
 		JSONArray array = new JSONArray();
 		json.put("operacion", "1");
@@ -80,31 +80,69 @@ public class AuxiliarClienteSockets {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		return array; // cambiar por el retorno correcto
+		return array; 
 	} // end listaPlazasDisponibles
 
 
 	@SuppressWarnings("unchecked")
 	JSONObject hazReserva(String codUsuario, String actividad, DiaSemana dia, long hora) {
 		JSONObject json = new JSONObject();
+		JSONObject obj = new JSONObject();
 		json.put("operacion", "3");
 		json.put("actividad", actividad);
 		json.put("dia", dia);
 		json.put("hora", hora);
-		return null; // cambiar por el retorno correcto
+		try {
+			mySocket.sendMessage(json.toString());
+			
+			String res = mySocket.receiveMessage();
+			obj = (JSONObject) parser.parse(res);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return obj; 
 	} // end hazReserva
 
 
 	@SuppressWarnings("unchecked")
 	public JSONObject modificaReserva(String codUsuario, long codReserva, DiaSemana nuevoDia, long nuevaHora) {
-		// POR IMPLEMENTAR
-		return null; // cambiar por el retorno correcto
+		JSONObject json = new JSONObject();
+		JSONObject obj = new JSONObject();
+		json.put("operacion", "4");
+		json.put("codUsuario", codUsuario);
+		json.put("codReserva", codReserva);
+		json.put("nuevoDia", nuevoDia);
+		json.put("nuevaHora", nuevaHora);
+		try {
+			mySocket.sendMessage(json.toString());
+			
+			String res = mySocket.receiveMessage();
+			obj = (JSONObject) parser.parse(res);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return obj; 
 	} // end modificaReserva
 
 	@SuppressWarnings("unchecked")
 	public JSONObject cancelaReserva(String codUsuario, long codReserva) {
-		// POR IMPLEMENTAR
-		return null; // cambiar por el retorno correcto
+		JSONObject json = new JSONObject();
+		JSONObject obj = new JSONObject();
+		json.put("operacion", "5");
+		json.put("codUsuario", codUsuario);
+		json.put("codReserva", codReserva);
+		try {
+			mySocket.sendMessage(json.toString());
+			
+			String res = mySocket.receiveMessage();
+			obj = (JSONObject) parser.parse(res);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		return obj; 
 
 	} // cancelaReserva
 
