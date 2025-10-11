@@ -48,14 +48,18 @@ public class ClienteSockets {
      * Programa principal. Muestra el menú repetidamente y atiende las peticiones del usuario.
      *
      * @param args	no se usan argumentos de entrada al programa principal
+     * @throws IOException 
+     * @throws UnknownHostException 
+     * @throws SocketException 
      */
-    public static void main(String[] args)  {
-
+    public static void main(String[] args) {
+    	
         Scanner teclado = new Scanner(System.in);
         String localhost = "localhost";
         String puerto = "1234";
         // Crea un gestor de reservas
-        AuxiliarClienteSockets cliente = new AuxiliarClienteSockets(localhost, puerto);
+        try {
+        	AuxiliarClienteSockets cliente = new AuxiliarClienteSockets(localhost, puerto);
         
 
         System.out.print("Introduce tu código de usuario: ");
@@ -67,7 +71,7 @@ public class ClienteSockets {
             switch (opcion) {
                 case 0 -> { // Guardar los datos en el fichero y salir del programa
 
-                    cliente.guardaDatos();
+                    cliente.cierraSesion();
                     System.exit(0);
 
                 }
@@ -78,23 +82,15 @@ public class ClienteSockets {
                 }
                 case 2 -> { // Listar los plazas disponibles de una actividad
                 	Scanner sc = new Scanner(System.in);
-                	DiaSemana dia = DiaSemana.leerDia(sc);
                 	System.out.print("Dame el nombre de un actividad: ");
                 	String act = sc.nextLine();
-                	System.out.print("Dame la hora de la actividad: ");
-                	Integer hora = sc.nextInt();
-                	Sesion se = cliente.buscaSesion(act,dia,hora);
-                	if(se != null) {
-                		long res = se.getPlazas();
-                		if(res == 0){
-                			System.out.print("No hay plazas disponibles para esa sesión");
-                		}
-                    	System.out.print(res);
-                	} else {
-                		System.out.println("No hay sesión para ese momento.");
+                	JSONArray res = cliente.listaPlazasDisponibles(act);
+                	if (res.isEmpty()) {
+                		System.out.print("No hay sesiones disponibles para esa actividad");
                 	}
-                	
-
+                	else {
+                		System.out.print(res);
+                	}    	
 
                 }
                 case 3 -> { // Hacer una reserva
@@ -164,6 +160,16 @@ public class ClienteSockets {
             } // fin switch
 
         } while (opcion != 0);
+        }
+        catch (SocketException ex) {
+			System.out.println("Capturada SocketException");
+		}
+		catch (IOException ex) {
+			System.out.println("Capturada IOException");
+		}
+		catch (Exception ex) {
+			System.out.println("Exception caught in thread: " + ex);
+		} // fin catch
 
     } // fin de main
 } // fin class

@@ -153,6 +153,11 @@ public class AuxiliarClienteSockets {
 	 */
 	@SuppressWarnings("unchecked")
 	public void cierraSesion( ) {
-		// POR IMPLEMENTAR
+		try {
+			mySocket.close();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	} // end done 
 } //end class
