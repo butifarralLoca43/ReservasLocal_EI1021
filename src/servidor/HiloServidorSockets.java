@@ -42,26 +42,50 @@ class HiloServidorSockets implements Runnable {
 		try {
 			while (!done) {
 				// Recibe una petición del cliente
+				String peticion = myDataSocket.receiveMessage();
 				// Extrae la operación y sus parámetros
+				JSONParser parser = new JSONParser();
+				JSONObject json = (JSONObject) parser.parse(peticion);
+				operacion = json.get("operacion").toString();
 
 				switch (operacion) {
 					case "0":
-						// ...
+						done = true;
+						
+						gestor.guardaDatos();
+						
+						JSONObject respuesta = new JSONObject();
+						respuesta.put("resutado", "Sesión cerrada y datos guardados");
+						myDataSocket.sendMessage(respuesta.toJSONString());
+						
 						break;
+						
 
 					case "1": { // Devuelve una lista de reservas de un usuario
-						// ...
-
+						String codUsuario = json.get("codUsuario").toString();
+						
+						JSONArray arrayReservas = gestor.listaReservasUsuario(codUsuario);
+						myDataSocket.sendMessage(arrayReservas.toJSONString());
+						
 						break;
 					}
 					case "2": { // Devuelve una lista de plazas disponibles de una actividad
-						// ...
+						String actividad = json.get("actividad").toString();
+						
+						JSONArray arrayPlazas = gestor.listaPlazasDisponibles(actividad);
+						myDataSocket.sendMessage(arrayPlazas.toJSONString());
 
 						break;
 					}
 					case "3": { // Un usuario hace una reserva
-						// ...
-
+						String codUsuario = json.get("codUsuario").toString();
+						String actividad = json.get("actividad").toString();
+						DiaSemana dia = DiaSemana.valueOf((String) json.get("dia"));
+                        long hora = (long) json.get("hora");
+						
+						JSONObject reserva = gestor.hazReserva(codUsuario, actividad, dia, hora);
+						myDataSocket.sendMessage(reserva.toString());
+						
 						break;
 					}
 					case "4": { // Un usuario modifica una de sus reservas

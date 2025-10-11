@@ -89,6 +89,7 @@ public class AuxiliarClienteSockets {
 		JSONObject json = new JSONObject();
 		JSONObject obj = new JSONObject();
 		json.put("operacion", "3");
+		json.put("codUsuario", codUsuario);
 		json.put("actividad", actividad);
 		json.put("dia", dia);
 		json.put("hora", hora);
