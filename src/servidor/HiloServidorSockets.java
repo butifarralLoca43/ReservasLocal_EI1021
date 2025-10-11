@@ -89,12 +89,22 @@ class HiloServidorSockets implements Runnable {
 						break;
 					}
 					case "4": { // Un usuario modifica una de sus reservas
-						// ...
-
+						String codUsuario = json.get("codUsuario").toString();
+						long codReserva = (long) json.get("codReserva");
+						DiaSemana dia = DiaSemana.valueOf((String) json.get("nuevoDia"));
+						long hora = (long) json.get("nuevaHora");
+						
+						JSONObject reservaModificada = gestor.modificaReserva(codUsuario, codReserva, dia, hora);
+						myDataSocket.sendMessage(reservaModificada.toString());
+						
 						break;
 					}
 					case "5": { // Un usuario cancela una de sus reservas
-						// ...
+						String codUsuario = json.get("codUsuario").toString();
+						long codReserva = (long) json.get("codReserva");
+						
+						JSONObject reservaCancelada = gestor.cancelaReserva(codUsuario, codReserva);
+						myDataSocket.sendMessage(reservaCancelada.toString());
 
 						break;
 					}
