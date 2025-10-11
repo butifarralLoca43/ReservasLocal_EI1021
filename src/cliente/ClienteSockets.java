@@ -77,7 +77,12 @@ public class ClienteSockets {
                 }
                 case 1 -> { // Listar los paquetes enviados por el cliente
                     JSONArray res = cliente.listaReservasUsuario(codUsuario);
-                    System.out.print(res);
+                    if(res.isEmpty()) {
+                    	System.out.print("El cliente no tiene reservas");
+                    }
+                    else {
+                    	System.out.print(res);
+                    }
 
                 }
                 case 2 -> { // Listar los plazas disponibles de una actividad
