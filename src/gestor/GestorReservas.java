@@ -43,7 +43,7 @@ public class GestorReservas {
 		// Genera las sesiones de la próxima semana con todas las plazas libres inicialmente
 		generaSesiones();
 
-		File file = new File("reservas.json");
+		File file = new File("cliente.json");
 		try {
 			if (!file.exists() ) {
 				// Si no existen el fichero de datos, los genera con valores por defecto.

@@ -91,7 +91,7 @@ public class AuxiliarClienteSockets {
 		json.put("operacion", "3");
 		json.put("codUsuario", codUsuario);
 		json.put("actividad", actividad);
-		json.put("dia", dia);
+		json.put("dia", dia.name());
 		json.put("hora", hora);
 		try {
 			mySocket.sendMessage(json.toString());
@@ -113,7 +113,7 @@ public class AuxiliarClienteSockets {
 		json.put("operacion", "4");
 		json.put("codUsuario", codUsuario);
 		json.put("codReserva", codReserva);
-		json.put("nuevoDia", nuevoDia);
+		json.put("nuevoDia", nuevoDia.name());
 		json.put("nuevaHora", nuevaHora);
 		try {
 			mySocket.sendMessage(json.toString());
@@ -154,6 +154,10 @@ public class AuxiliarClienteSockets {
 	@SuppressWarnings("unchecked")
 	public void cierraSesion( ) {
 		try {
+			JSONObject json = new JSONObject();
+			json.put("operacion", "0");
+			
+			mySocket.sendMessage(json.toString());		
 			mySocket.close();
 		}
 		catch(Exception e) {

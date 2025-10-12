@@ -56,7 +56,7 @@ public class ClienteSockets {
     	
         Scanner teclado = new Scanner(System.in);
         String localhost = "localhost";
-        String puerto = "1234";
+        String puerto = "12345";
         // Crea un gestor de reservas
         try {
         	AuxiliarClienteSockets cliente = new AuxiliarClienteSockets(localhost, puerto);
@@ -109,6 +109,7 @@ public class ClienteSockets {
                     
                     System.out.println("Dame una hora (número entero, ej: 9 o 18): ");
                     long hora = teclado.nextLong();
+                   
                     
                     JSONObject nuevaReserva = cliente.hazReserva(codUsuario, actividad, dia, hora);
 
@@ -135,6 +136,7 @@ public class ClienteSockets {
                     
                     System.out.println("Nueva hora: ");
                     long hora = teclado.nextLong();
+                   
                     
                     JSONObject nuevaModificada = cliente.modificaReserva(codUsuario, codReserva, dia, hora);
                     
