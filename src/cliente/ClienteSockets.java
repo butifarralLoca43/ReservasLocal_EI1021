@@ -56,7 +56,7 @@ public class ClienteSockets {
     	
         Scanner teclado = new Scanner(System.in);
         String localhost = "localhost";
-        String puerto = "1234";
+        String puerto = "12345";
         // Crea un gestor de reservas
         try {
         	AuxiliarClienteSockets cliente = new AuxiliarClienteSockets(localhost, puerto);
