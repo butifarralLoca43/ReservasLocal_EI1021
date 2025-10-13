@@ -267,15 +267,17 @@ public class GestorReservas {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized JSONArray listaPlazasDisponibles(String actividad) {
-		JSONArray SesionesDisponibles = new JSONArray();
+		JSONArray sesionesDisponibles = new JSONArray();
         for(DiaSemana dia : sesionesSemana.keySet()) {
             for(Sesion se : sesionesSemana.get(dia)) {
                 if(se.getActividad().equals(actividad) && se.getPlazas() > 0) {
-                	SesionesDisponibles.add(se.toJSON());
+                	JSONObject json = se.toJSON();
+                	json.put("dia", dia.name());
+                	sesionesDisponibles.add(json);
                 }
             }
         }
-        return SesionesDisponibles;
+        return sesionesDisponibles;
 	}
 
 

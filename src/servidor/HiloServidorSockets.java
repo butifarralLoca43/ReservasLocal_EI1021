@@ -82,7 +82,8 @@ class HiloServidorSockets implements Runnable {
 						String actividad = json.get("actividad").toString();
 						DiaSemana dia = DiaSemana.valueOf((String) json.get("dia"));
                         long hora = (long) json.get("hora");
-						
+                        
+                        System.out.print("hola");
 						JSONObject reserva = gestor.hazReserva(codUsuario, actividad, dia, hora);
 						myDataSocket.sendMessage(reserva.toString());
 						
@@ -94,6 +95,7 @@ class HiloServidorSockets implements Runnable {
 						DiaSemana dia = DiaSemana.valueOf((String) json.get("nuevoDia"));
 						long hora = (long) json.get("nuevaHora");
 						
+						System.out.print("hola");					
 						JSONObject reservaModificada = gestor.modificaReserva(codUsuario, codReserva, dia, hora);
 						myDataSocket.sendMessage(reservaModificada.toString());
 						

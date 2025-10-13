@@ -109,6 +109,7 @@ public class ClienteSockets {
                     
                     System.out.println("Dame una hora (número entero, ej: 9 o 18): ");
                     long hora = teclado.nextLong();
+                   
                     
                     JSONObject nuevaReserva = cliente.hazReserva(codUsuario, actividad, dia, hora);
 
@@ -135,6 +136,7 @@ public class ClienteSockets {
                     
                     System.out.println("Nueva hora: ");
                     long hora = teclado.nextLong();
+                   
                     
                     JSONObject nuevaModificada = cliente.modificaReserva(codUsuario, codReserva, dia, hora);
                     
